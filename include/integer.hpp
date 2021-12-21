@@ -21,11 +21,13 @@ public:
 
 	void operator += (const Integer& other);
 	void operator -= (Integer other);
+	void operator *= (Integer other);
 	void operator <<= (const Digit& shift);
 	void operator >>= (const Digit& shift);
 
 	Integer operator + (const Integer& other) const;
 	Integer operator - (const Integer& other) const;
+	Integer operator * (const Integer& other) const;
 	Integer operator << (const Digit& shift) const;
 	Integer operator >> (const Digit& shift) const;
 

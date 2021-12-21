@@ -6,6 +6,19 @@ namespace
 	constexpr Integer::Digit BASE = 1000000000;
 	constexpr Integer::Digit COMPLEMENT = BASE - 1;
 	constexpr Integer::Digit BASE_BITNESS = 9;
+
+	void bin_multiplication(Integer a, Integer::Digit b, Integer& res)
+	{
+		while (b)
+		{
+			if (b & 1)
+			{
+				res += a;
+			}
+			a += a;
+			b >>= 1;
+		}
+	}
 }
 
 Integer::Integer(const std::string& num) : m_number()
@@ -105,6 +118,53 @@ void Integer::operator -= (Integer other)
 	*this += other;
 }
 
+void Integer::operator *= (Integer other)
+{
+	if (IsNaN() || other.IsNaN())
+	{
+		m_number.clear();
+		m_nan = true;
+		return;
+	}
+
+	if (IsZero() || other.IsZero())
+	{
+		m_number.resize(1);
+		m_number[0] = 0;
+		return;
+	}
+	
+	Integer res;
+	res.m_positive = m_positive == other.m_positive;
+
+	if (!m_positive)
+	{
+		Complement();
+		m_positive = true;
+	}
+
+	if (!other.m_positive)
+	{
+		other.Complement();
+		other.m_positive = true;
+	}
+
+	for (size_t i = 0; i < other.BitDepth(); ++i)
+	{
+		bin_multiplication(*this, other[i], res);
+		if (i < other.BitDepth() - 1)
+		{
+			*this <<= 1;
+		}
+	}
+
+	if (!res.m_positive)
+	{
+		res.Complement();
+	}
+	*this = std::move(res);
+}
+
 void Integer::operator <<= (const Digit& shift)
 {
 	if (shift == 0 || IsNaN() || IsZero())
@@ -148,6 +208,13 @@ Integer Integer::operator - (const Integer& other) const
 {
 	Integer res(*this);
 	res -= other;
+	return res;
+}
+
+Integer Integer::operator * (const Integer& other) const
+{
+	Integer res(*this);
+	res *= other;
 	return res;
 }
 
