@@ -113,6 +113,11 @@ void Integer::operator += (const Integer& other)
 
 void Integer::operator -= (Integer other)
 {
+	if (other.IsZero())
+	{
+		return;
+	}
+
 	other.Complement();
 	other.m_positive = !other.m_positive;
 	*this += other;
@@ -230,6 +235,84 @@ Integer Integer::operator >> (const Digit& shift) const
 	Integer result(*this);
 	result >>= shift;
 	return result;
+}
+
+bool Integer::operator == (const Integer& other) const
+{
+	if (other.IsNaN() || IsNaN() || m_positive != other.m_positive)
+	{
+		return false;
+	}
+
+	size_t leng = std::max(m_number.size(), other.m_number.size());
+	for (size_t i = 0; i < leng; ++i)
+	{
+		if ((*this)[i] != other[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool Integer::operator != (const Integer& other) const
+{
+	return !(*this == other);
+}
+
+bool Integer::operator < (const Integer& other) const
+{
+	if (other.IsNaN() || IsNaN())
+	{
+		return false;
+	}
+
+	if (m_positive != other.m_positive)
+	{
+		return m_positive < other.m_positive;
+	}
+
+	size_t leng = std::max(m_number.size(), other.m_number.size());
+	for (size_t i = 0; i < leng; ++i)
+	{
+		if ((*this)[i] != other[i])
+		{
+			return (*this)[i] < other[i];
+		}
+	}
+
+	return false;
+}
+
+bool Integer::operator <= (const Integer& other) const
+{
+	if (other.IsNaN() || IsNaN())
+	{
+		return false;
+	}
+
+	return (*this < other) || (*this == other);
+}
+
+bool Integer::operator > (const Integer& other) const
+{
+	if (other.IsNaN() || IsNaN())
+	{
+		return false;
+	}
+
+	return !(*this <= other);
+}
+
+bool Integer::operator >= (const Integer& other) const
+{
+	if (other.IsNaN() || IsNaN())
+	{
+		return false;
+	}
+
+	return !(*this < other);
 }
 
 std::ostream& operator << (std::ostream& os, Integer num)

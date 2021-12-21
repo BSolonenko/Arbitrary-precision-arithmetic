@@ -31,6 +31,13 @@ public:
 	Integer operator << (const Digit& shift) const;
 	Integer operator >> (const Digit& shift) const;
 
+	bool operator == (const Integer& other) const;
+	bool operator != (const Integer& other) const;
+	bool operator < (const Integer& other) const;
+	bool operator <= (const Integer& other) const;
+	bool operator > (const Integer& other) const;
+	bool operator >= (const Integer& other) const;
+
 	friend std::ostream& operator << (std::ostream& os, Integer num);
 	friend std::istream& operator >> (std::istream& os, Integer& num);
 
